@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR &amp; Barcode Scanner</string>
+    <string name="app_name">Full QR Scanner</string>
 
     <!--Shortcuts-->
     <string name="shortcut_scan_from_camera">Scan</string>
@@ -111,6 +111,7 @@
         <item>Litecoin</item>
         <item>Dash</item>
     </string-array>
+
     <string name="fragment_create_qr_code_cryptocurrency_address_hint">Receiver address</string>
     <string name="fragment_create_qr_code_cryptocurrency_amount_hint">Amount</string>
     <string name="fragment_create_qr_code_cryptocurrency_label_hint">Label</string>

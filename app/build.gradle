@@ -12,13 +12,13 @@ sentry {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.example.barcodescanner"
+        applicationId "com.full.qr.scanner.pvt.no"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 12
         versionName "1.10"
         multiDexEnabled true
@@ -115,4 +115,6 @@ dependencies {
 
     // Sentry
     implementation 'io.sentry:sentry-android:5.7.1'
+
+    implementation "com.fulldive:popups:1.0.9"
 }
