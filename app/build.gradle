@@ -16,7 +16,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.full.qr.scanner.pvt.no"
+        applicationId "com.full.qr.scanner.top.secure.no"
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 12
