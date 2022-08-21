@@ -55,7 +55,7 @@ android {
     productFlavors {
         appGallery {}
         googlePlay {
-            applicationId "org.barcodescanner"
+            applicationId "com.full.qr.scanner.top.secure.no"
         }
         fDroid {
             buildConfigField "boolean", "ERROR_REPORTS_ENABLED_BY_DEFAULT", "false"
