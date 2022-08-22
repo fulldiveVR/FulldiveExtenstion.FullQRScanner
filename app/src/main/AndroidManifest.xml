@@ -34,7 +34,7 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.full.qr.scanner.top.secure.no.fileprovider"
-            android:exported="true"
+            android:exported="false"
             android:grantUriPermissions="true"
             >
             <meta-data
