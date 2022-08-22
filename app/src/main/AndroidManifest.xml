@@ -34,7 +34,7 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.full.qr.scanner.top.secure.no.fileprovider"
-            android:exported="false"
+            android:exported="true"
             android:grantUriPermissions="true"
             >
             <meta-data
@@ -123,82 +123,82 @@
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.create.qr.CreateQrCodeAllActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.create.barcode.CreateBarcodeAllActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
 
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.barcode.BarcodeActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.barcode.BarcodeImageActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.barcode.otp.OtpActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.barcode.save.SaveBarcodeAsTextActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.barcode.save.SaveBarcodeAsImageActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
 
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.history.export.ExportHistoryActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
 
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.settings.theme.ChooseThemeActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.settings.camera.ChooseCameraActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.settings.formats.SupportedFormatsActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.settings.search.ChooseSearchEngineActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
         <activity
             android:name="com.full.qr.scanner.top.secure.no.feature.tabs.settings.permissions.AllPermissionsActivity"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             />
 
     </application>
