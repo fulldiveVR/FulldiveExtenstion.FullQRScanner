@@ -8,9 +8,9 @@
         android:shortcutLongLabel="@string/shortcut_scan_from_camera"
         >
         <intent
-            android:action="org.barcodescanner.SCAN_FROM_CAMERA"
-            android:targetPackage="org.barcodescanner"
-            android:targetClass="com.full.qr.scanner.private.no.BottomTabsActivity"
+            android:action="com.full.qr.scanner.top.secure.no.SCAN_FROM_CAMERA"
+            android:targetPackage="com.full.qr.scanner.top.secure.no"
+            android:targetClass="com.full.qr.scanner.top.secure.no.feature.tabs.BottomTabsActivity"
             />
     </shortcut>
 
@@ -22,9 +22,9 @@
         android:shortcutLongLabel="@string/shortcut_scan_from_file"
         >
         <intent
-            android:action="org.barcodescanner.SCAN_FROM_FILE"
-            android:targetPackage="org.barcodescanner"
-            android:targetClass="com.full.qr.scanner.private.no.ScanBarcodeFromFileActivity"
+            android:action="com.full.qr.scanner.top.secure.no.SCAN_FROM_FILE"
+            android:targetPackage="com.full.qr.scanner.top.secure.no"
+            android:targetClass="com.full.qr.scanner.top.secure.no.feature.tabs.scan.file.ScanBarcodeFromFileActivity"
             />
     </shortcut>
 
@@ -36,9 +36,9 @@
         android:shortcutLongLabel="@string/shortcut_create_barcode"
         >
         <intent
-            android:action="org.barcodescanner.CREATE_BARCODE"
-            android:targetPackage="org.barcodescanner"
-            android:targetClass="com.full.qr.scanner.private.no.BottomTabsActivity"
+            android:action="com.full.qr.scanner.top.secure.no.CREATE_BARCODE"
+            android:targetPackage="com.full.qr.scanner.top.secure.no"
+            android:targetClass="com.full.qr.scanner.top.secure.no.feature.tabs.BottomTabsActivity"
             />
     </shortcut>
 
@@ -50,9 +50,9 @@
         android:shortcutLongLabel="@string/shortcut_history"
         >
         <intent
-            android:action="org.barcodescanner.HISTORY"
-            android:targetPackage="org.barcodescanner"
-            android:targetClass="com.full.qr.scanner.private.no.BottomTabsActivity"
+            android:action="com.full.qr.scanner.top.secure.no.HISTORY"
+            android:targetPackage="com.full.qr.scanner.top.secure.no"
+            android:targetClass="com.full.qr.scanner.top.secure.no.feature.tabs.BottomTabsActivity"
             />
     </shortcut>
 
