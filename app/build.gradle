@@ -6,6 +6,10 @@ plugins {
     id 'kotlin-kapt'
 }
 
+def versionMajor = 1
+def versionMinor = 0
+def versionPatch = 0
+
 sentry {
     includeProguardMapping = true
     autoUploadProguardMapping = true
@@ -19,8 +23,16 @@ android {
         applicationId "com.full.qr.scanner.top.secure.no"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 12
-        versionName "1.10"
+
+        versionCode versionMajor*10000+versionMinor*100+versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        resValue "string","app_version", "${defaultConfig.versionName}"
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                output.outputFileName = "Full4kTV-v${android.defaultConfig.versionName}-${variant.buildType.name}.apk"
+            }
+        }
+
         multiDexEnabled true
         vectorDrawables.useSupportLibrary  true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -43,11 +55,24 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
+    signingConfigs {
+        release {
+            storeFile file('../keys/keys.jks')
+            storePassword System.getenv("FULLDIVE_KEYSTORE_PASSWORD")
+            keyAlias System.getenv("FULLDIVE_ALIAS")
+            keyPassword System.getenv("FULLDIVE_ALIAS_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+
         }
     }
 
