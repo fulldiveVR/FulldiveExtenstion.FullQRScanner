@@ -1,6 +1,9 @@
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
 
+-dontwarn org.slf4j.**
+-dontwarn javax.**
+
 # Kotlin
 #https://stackoverflow.com/questions/33547643/how-to-use-kotlin-with-proguard
 #https://medium.com/@AthorNZ/kotlin-metadata-jackson-and-proguard-f64f51e5ed32
