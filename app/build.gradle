@@ -1,5 +1,4 @@
 plugins {
-    id("io.sentry.android.gradle") version "3.0.1"
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
@@ -9,11 +8,6 @@ plugins {
 def versionMajor = 1
 def versionMinor = 0
 def versionPatch = 0
-
-sentry {
-    includeProguardMapping = true
-    autoUploadProguardMapping = true
-}
 
 android {
     compileSdkVersion 32
@@ -138,9 +132,6 @@ dependencies {
 
     // Date time picker
     implementation 'com.github.florent37:singledateandtimepicker:2.2.6'
-
-    // Sentry
-    implementation 'io.sentry:sentry-android:5.7.1'
 
     implementation "com.fulldive:popups:1.0.9"
 }

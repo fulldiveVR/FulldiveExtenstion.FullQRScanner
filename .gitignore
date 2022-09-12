@@ -93,5 +93,3 @@ atlassian-ide-plugin.xml
 # Mongo Explorer plugin
 .idea/mongoSettings.xml
 
-# Sentry
-/sentry.properties
