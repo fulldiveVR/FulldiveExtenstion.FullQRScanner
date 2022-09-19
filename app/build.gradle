@@ -133,5 +133,5 @@ dependencies {
     // Date time picker
     implementation 'com.github.florent37:singledateandtimepicker:2.2.6'
 
-    implementation "com.fulldive:popups:1.0.9"
+    implementation "com.fulldive:popups:1.0.13"
 }
