@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.full.qr.scanner.top.secure.no.R
-import kotlinx.android.synthetic.main.dialog_edit_barcode_name.view.*
 
 class EditBarcodeNameDialogFragment : DialogFragment() {
 
@@ -42,14 +42,14 @@ class EditBarcodeNameDialogFragment : DialogFragment() {
             .setTitle(R.string.dialog_edit_barcode_name_title)
             .setView(view)
             .setPositiveButton(R.string.dialog_edit_barcode_name_positive_button) { _, _ ->
-                val newName = view.edit_text_barcode_name.text.toString()
+                val newName = view.findViewById<EditText>(R.id.edit_text_barcode_name).text.toString()
                 listener?.onNameConfirmed(newName)
             }
             .setNegativeButton(R.string.dialog_edit_barcode_name_negative_button, null)
             .create()
 
         dialog.setOnShowListener {
-            initNameEditText(view.edit_text_barcode_name, name)
+            initNameEditText(view.findViewById<EditText>(R.id.edit_text_barcode_name), name)
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
         }

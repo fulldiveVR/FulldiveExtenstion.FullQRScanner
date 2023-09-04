@@ -6,9 +6,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.RadioButton
+import android.widget.TextView
 import androidx.core.view.isInvisible
 import com.full.qr.scanner.top.secure.no.R
-import kotlinx.android.synthetic.main.layout_settings_radio_button.view.*
 
 class SettingsRadioButton : FrameLayout {
     private val view: View
@@ -27,25 +28,25 @@ class SettingsRadioButton : FrameLayout {
         }
 
         view.setOnClickListener {
-            radio_button.toggle()
+            view.findViewById<RadioButton>(R.id.radio_button).toggle()
         }
     }
 
     var isChecked: Boolean
-        get() = view.radio_button.isChecked
-        set(value) { view.radio_button.isChecked = value }
+        get() = view.findViewById<RadioButton>(R.id.radio_button).isChecked
+        set(value) { view.findViewById<RadioButton>(R.id.radio_button).isChecked = value }
     
     fun setCheckedChangedListener(listener: ((Boolean) -> Unit)?) {
-        view.radio_button.setOnCheckedChangeListener { _, isChecked ->
+        view.findViewById<RadioButton>(R.id.radio_button).setOnCheckedChangeListener { _, isChecked ->
             listener?.invoke(isChecked)
         }
     }
 
     private fun showText(attributes: TypedArray) {
-        view.text_view_text.text = attributes.getString(R.styleable.SettingsRadioButton_text).orEmpty()
+        view.findViewById<TextView>(R.id.text_view_text).text = attributes.getString(R.styleable.SettingsRadioButton_text).orEmpty()
     }
 
     private fun showDelimiter(attributes: TypedArray) {
-        view.delimiter.isInvisible = attributes.getBoolean(R.styleable.SettingsRadioButton_isDelimiterVisible, true).not()
+        view.findViewById<View>(R.id.delimiter).isInvisible = attributes.getBoolean(R.styleable.SettingsRadioButton_isDelimiterVisible, true).not()
     }
 }

@@ -5,9 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.RecyclerView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.barcodeDatabase
 import com.full.qr.scanner.top.secure.no.di.barcodeSaver
@@ -21,7 +29,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_export_history.*
 
 class ExportHistoryActivity : BaseActivity() {
     private val disposable = CompositeDisposable()
@@ -47,6 +54,7 @@ class ExportHistoryActivity : BaseActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (permissionsHelper.areAllPermissionsGranted(grantResults)) {
             exportHistory()
         }
@@ -58,17 +66,17 @@ class ExportHistoryActivity : BaseActivity() {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view).applySystemWindowInsets(applyTop = true, applyBottom = true)
     }
 
     private fun initToolbar() {
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             finish()
         }
     }
 
     private fun initExportTypeSpinner() {
-        spinner_export_as.adapter = ArrayAdapter.createFromResource(
+        findViewById<Spinner>(R.id.spinner_export_as).adapter = ArrayAdapter.createFromResource(
             this, R.array.activity_export_history_types, R.layout.item_spinner
         ).apply {
             setDropDownViewResource(R.layout.item_spinner_dropdown)
@@ -76,13 +84,13 @@ class ExportHistoryActivity : BaseActivity() {
     }
 
     private fun initFileNameEditText() {
-        edit_text_file_name.addTextChangedListener {
-            button_export.isEnabled = edit_text_file_name.isNotBlank()
+        findViewById<EditText>(R.id.edit_text_file_name).addTextChangedListener {
+            findViewById<Button>(R.id.button_export) .isEnabled = findViewById<EditText>(R.id.edit_text_file_name).isNotBlank()
         }
     }
 
     private fun initExportButton() {
-        button_export.setOnClickListener {
+        findViewById<Button>(R.id.button_export).setOnClickListener {
             requestPermissions()
         }
     }
@@ -92,8 +100,8 @@ class ExportHistoryActivity : BaseActivity() {
     }
 
     private fun exportHistory() {
-        val fileName = edit_text_file_name.textString
-        val saveFunc = when (spinner_export_as.selectedItemPosition) {
+        val fileName = findViewById<EditText>(R.id.edit_text_file_name).textString
+        val saveFunc = when (findViewById<Spinner>(R.id.spinner_export_as).selectedItemPosition) {
             0 -> barcodeSaver::saveBarcodeHistoryAsCsv
             1 -> barcodeSaver::saveBarcodeHistoryAsJson
             else -> return
@@ -121,8 +129,8 @@ class ExportHistoryActivity : BaseActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        progress_bar_loading.isVisible = isLoading
-        scroll_view.isVisible = isLoading.not()
+        findViewById<ProgressBar>(R.id.progress_bar_loading)  .isVisible = isLoading
+        findViewById<NestedScrollView>(R.id.scroll_view).isVisible = isLoading.not()
     }
 
     private fun showHistoryExported() {

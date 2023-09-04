@@ -4,22 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.barcodeDatabase
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
 import com.full.qr.scanner.top.secure.no.extension.showError
 import com.full.qr.scanner.top.secure.no.feature.common.dialog.DeleteConfirmationDialogFragment
 import com.full.qr.scanner.top.secure.no.feature.tabs.history.export.ExportHistoryActivity
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.tabs.TabLayout
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_barcode_history.*
 
 
 class BarcodeHistoryFragment : Fragment(), DeleteConfirmationDialogFragment.Listener {
     private val disposable = CompositeDisposable()
+    private lateinit var fragmentView: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_barcode_history, container, false)
@@ -27,6 +31,7 @@ class BarcodeHistoryFragment : Fragment(), DeleteConfirmationDialogFragment.List
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fragmentView = view
         supportEdgeToEdge()
         initTabs()
         handleMenuClicked()
@@ -42,16 +47,16 @@ class BarcodeHistoryFragment : Fragment(), DeleteConfirmationDialogFragment.List
     }
 
     private fun supportEdgeToEdge() {
-        app_bar_layout.applySystemWindowInsets(applyTop = true)
+        fragmentView.findViewById<AppBarLayout>(R.id.app_bar_layout).applySystemWindowInsets(applyTop = true)
     }
 
     private fun initTabs() {
-        view_pager.adapter = BarcodeHistoryViewPagerAdapter(requireContext(), childFragmentManager)
-        tab_layout.setupWithViewPager(view_pager)
+        fragmentView.findViewById<ViewPager>(R.id.view_pager).adapter = BarcodeHistoryViewPagerAdapter(requireContext(), childFragmentManager)
+        fragmentView.findViewById<TabLayout>(R.id.tab_layout).setupWithViewPager(fragmentView.findViewById<ViewPager>(R.id.view_pager))
     }
 
     private fun handleMenuClicked() {
-        toolbar.setOnMenuItemClickListener { item ->
+       fragmentView. findViewById<Toolbar>(R.id.toolbar).setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.item_export_history -> navigateToExportHistoryScreen()
                 R.id.item_clear_history -> showDeleteHistoryConfirmationDialog()

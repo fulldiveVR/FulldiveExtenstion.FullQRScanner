@@ -3,6 +3,11 @@ package com.full.qr.scanner.top.secure.no.feature.barcode
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.barcodeImageGenerator
@@ -13,7 +18,6 @@ import com.full.qr.scanner.top.secure.no.extension.unsafeLazy
 import com.full.qr.scanner.top.secure.no.feature.BaseActivity
 import com.full.qr.scanner.top.secure.no.model.Barcode
 import com.full.qr.scanner.top.secure.no.usecase.Logger
-import kotlinx.android.synthetic.main.activity_barcode_image.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,7 +35,8 @@ class BarcodeImageActivity : BaseActivity() {
 
     private val dateFormatter = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.ENGLISH)
     private val barcode by unsafeLazy {
-        intent?.getSerializableExtra(BARCODE_KEY) as? Barcode ?: throw IllegalArgumentException("No barcode passed")
+        intent?.getSerializableExtra(BARCODE_KEY) as? Barcode
+            ?: throw IllegalArgumentException("No barcode passed")
     }
     private var originalBrightness: Float = 0.5f
 
@@ -47,7 +52,8 @@ class BarcodeImageActivity : BaseActivity() {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view)
+        .applySystemWindowInsets(applyTop = true, applyBottom = true)
     }
 
     private fun saveOriginalBrightness() {
@@ -55,35 +61,42 @@ class BarcodeImageActivity : BaseActivity() {
     }
 
     private fun handleToolbarBackPressed() {
-        toolbar.setNavigationOnClickListener {
-            finish()
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.setNavigationOnClickListener {
+                finish()
+            }
         }
     }
 
     private fun handleToolbarMenuItemClicked() {
-        toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.item_increase_brightness -> {
-                    increaseBrightnessToMax()
-                    toolbar.menu.apply {
-                        findItem(R.id.item_increase_brightness).isVisible = false
-                        findItem(R.id.item_decrease_brightness).isVisible = true
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.item_increase_brightness -> {
+                        increaseBrightnessToMax()
+                        toolbar.menu.apply {
+                            findItem(R.id.item_increase_brightness).isVisible = false
+                            findItem(R.id.item_decrease_brightness).isVisible = true
+                        }
+                    }
+
+                    R.id.item_decrease_brightness -> {
+                        restoreOriginalBrightness()
+                        toolbar.menu.apply {
+                            findItem(R.id.item_decrease_brightness).isVisible = false
+                            findItem(R.id.item_increase_brightness).isVisible = true
+                        }
                     }
                 }
-                R.id.item_decrease_brightness -> {
-                    restoreOriginalBrightness()
-                    toolbar.menu.apply {
-                        findItem(R.id.item_decrease_brightness).isVisible = false
-                        findItem(R.id.item_increase_brightness).isVisible = true
-                    }
-                }
+                return@setOnMenuItemClickListener true
             }
-            return@setOnMenuItemClickListener true
         }
     }
 
     private fun showMenu() {
-        toolbar.inflateMenu(R.menu.menu_barcode_image)
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.inflateMenu(R.menu.menu_barcode_image)
+        }
     }
 
     private fun showBarcode() {
@@ -95,31 +108,42 @@ class BarcodeImageActivity : BaseActivity() {
 
     private fun showBarcodeImage() {
         try {
-            val bitmap = barcodeImageGenerator.generateBitmap(barcode, 2000, 2000, 0, settings.barcodeContentColor, settings.barcodeBackgroundColor)
-            image_view_barcode.setImageBitmap(bitmap)
-            image_view_barcode.setBackgroundColor(settings.barcodeBackgroundColor)
-            layout_barcode_image_background.setBackgroundColor(settings.barcodeBackgroundColor)
+            val bitmap = barcodeImageGenerator.generateBitmap(
+                barcode,
+                2000,
+                2000,
+                0,
+                settings.barcodeContentColor,
+                settings.barcodeBackgroundColor
+            )
+            findViewById<ImageView>(R.id.image_view_barcode)?.let {image_view_barcode->
+                image_view_barcode.setImageBitmap(bitmap)
+                image_view_barcode.setBackgroundColor(settings.barcodeBackgroundColor)
+                findViewById<FrameLayout>(R.id.layout_barcode_image_background).setBackgroundColor(settings.barcodeBackgroundColor)
 
-            if (settings.isDarkTheme.not() || settings.areBarcodeColorsInversed) {
-                layout_barcode_image_background.setPadding(0, 0, 0, 0)
+                if (settings.isDarkTheme.not() || settings.areBarcodeColorsInversed) {
+                    findViewById<FrameLayout>(R.id.layout_barcode_image_background).setPadding(0, 0, 0, 0)
+                }
             }
         } catch (ex: Exception) {
             Logger.log(ex)
-            image_view_barcode.isVisible = false
+            findViewById<ImageView>(R.id.image_view_barcode).isVisible = false
         }
     }
 
     private fun showBarcodeDate() {
-        text_view_date.text = dateFormatter.format(barcode.date)
+        findViewById<TextView>(R.id.text_view_date)?.text = dateFormatter.format(barcode.date)
     }
 
     private fun showBarcodeFormat() {
         val format = barcode.format.toStringId()
-        toolbar.setTitle(format)
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.setTitle(format)
+        }
     }
 
     private fun showBarcodeText() {
-        text_view_barcode_text.text = barcode.text
+        findViewById<TextView>(R.id.text_view_barcode_text)?.text = barcode.text
     }
 
     private fun increaseBrightnessToMax() {

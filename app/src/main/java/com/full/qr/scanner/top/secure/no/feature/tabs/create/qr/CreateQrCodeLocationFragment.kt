@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.isNotBlank
@@ -11,53 +12,66 @@ import com.full.qr.scanner.top.secure.no.extension.textString
 import com.full.qr.scanner.top.secure.no.feature.tabs.create.BaseCreateBarcodeFragment
 import com.full.qr.scanner.top.secure.no.model.schema.Geo
 import com.full.qr.scanner.top.secure.no.model.schema.Schema
-import kotlinx.android.synthetic.main.fragment_create_qr_code_location.*
 
 class CreateQrCodeLocationFragment : BaseCreateBarcodeFragment() {
+    private lateinit var fragmentView: View
 
     override val latitude: Double?
-        get() = edit_text_latitude.textString.toDoubleOrNull()
+        get() = fragmentView.findViewById<EditText>(R.id.edit_text_latitude).textString.toDoubleOrNull()
 
     override val longitude: Double?
-        get() = edit_text_longitude.textString.toDoubleOrNull()
+        get() = fragmentView.findViewById<EditText>(R.id.edit_text_longitude).textString.toDoubleOrNull()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_create_qr_code_location, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fragmentView = view
+
         initLatitudeEditText()
         handleTextChanged()
     }
 
     override fun getBarcodeSchema(): Schema {
-       return Geo(
-           latitude = edit_text_latitude.textString,
-           longitude = edit_text_longitude.textString,
-           altitude = edit_text_altitude.textString
-       )
+        return Geo(
+            latitude = fragmentView.findViewById<EditText>(R.id.edit_text_latitude).textString,
+            longitude = fragmentView.findViewById<EditText>(R.id.edit_text_longitude).textString,
+            altitude = fragmentView.findViewById<EditText>(R.id.edit_text_altitude).textString
+        )
     }
 
     override fun showLocation(latitude: Double?, longitude: Double?) {
         latitude?.apply {
-            edit_text_latitude.setText(latitude.toString())
+            fragmentView.findViewById<EditText>(R.id.edit_text_latitude)
+                .setText(latitude.toString())
         }
         longitude?.apply {
-            edit_text_longitude.setText(longitude.toString())
+            fragmentView.findViewById<EditText>(R.id.edit_text_longitude)
+                .setText(longitude.toString())
         }
     }
 
     private fun initLatitudeEditText() {
-        edit_text_latitude.requestFocus()
+        fragmentView.findViewById<EditText>(R.id.edit_text_latitude).requestFocus()
     }
 
     private fun handleTextChanged() {
-        edit_text_latitude.addTextChangedListener { toggleCreateBarcodeButton() }
-        edit_text_longitude.addTextChangedListener { toggleCreateBarcodeButton() }
+        fragmentView.findViewById<EditText>(R.id.edit_text_latitude)
+            .addTextChangedListener { toggleCreateBarcodeButton() }
+        fragmentView.findViewById<EditText>(R.id.edit_text_longitude)
+            .addTextChangedListener { toggleCreateBarcodeButton() }
     }
 
     private fun toggleCreateBarcodeButton() {
-        parentActivity.isCreateBarcodeButtonEnabled = edit_text_latitude.isNotBlank() && edit_text_longitude.isNotBlank()
+        parentActivity.isCreateBarcodeButtonEnabled =
+            fragmentView.findViewById<EditText>(R.id.edit_text_latitude)
+                .isNotBlank() && fragmentView.findViewById<EditText>(R.id.edit_text_longitude)
+                .isNotBlank()
     }
 }

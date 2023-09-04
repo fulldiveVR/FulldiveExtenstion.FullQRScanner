@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.otpGenerator
@@ -15,7 +19,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.activity_barcode_otp.*
 import java.util.concurrent.TimeUnit
 
 class OtpActivity : BaseActivity() {
@@ -58,7 +61,10 @@ class OtpActivity : BaseActivity() {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view).applySystemWindowInsets(
+            applyTop = true,
+            applyBottom = true
+        )
     }
 
     private fun parseOtp() {
@@ -66,13 +72,13 @@ class OtpActivity : BaseActivity() {
     }
 
     private fun handleToolbarBackClicked() {
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             finish()
         }
     }
 
     private fun handleRefreshOtpClicked() {
-        button_refresh.setOnClickListener {
+        findViewById<Button>(R.id.button_refresh).setOnClickListener {
             refreshOtp()
         }
     }
@@ -87,17 +93,19 @@ class OtpActivity : BaseActivity() {
             OtpAuth.HOTP_TYPE -> showHotp()
             OtpAuth.TOTP_TYPE -> showTotp()
         }
-        text_view_password.text = otpGenerator.generateOTP(otp) ?: getString(R.string.activity_barcode_otp_unable_to_generate_otp)
+        findViewById<TextView>(R.id.text_view_password).text = otpGenerator.generateOTP(otp)
+            ?: getString(R.string.activity_barcode_otp_unable_to_generate_otp)
     }
 
     private fun showHotp() {
-        button_refresh.isVisible = true
-        text_view_counter.isVisible = true
-        text_view_counter.text = getString(R.string.activity_barcode_otp_counter, otp.counter.orZero().toString())
+        findViewById<Button>(R.id.button_refresh).isVisible = true
+        findViewById<TextView>(R.id.text_view_counter).isVisible = true
+        findViewById<TextView>(R.id.text_view_counter).text =
+            getString(R.string.activity_barcode_otp_counter, otp.counter.orZero().toString())
     }
 
     private fun showTotp() {
-        text_view_timer.isVisible = true
+        findViewById<TextView>(R.id.text_view_timer).isVisible = true
         startTimer()
     }
 
@@ -122,7 +130,8 @@ class OtpActivity : BaseActivity() {
     private fun showTime(secondsLeft: Long) {
         val minutes = secondsLeft / 60
         val seconds = secondsLeft % 60
-        text_view_timer.text = getString(R.string.activity_barcode_otp_timer, minutes.toTime(), seconds.toTime())
+        findViewById<TextView>(R.id.text_view_timer).text =
+            getString(R.string.activity_barcode_otp_timer, minutes.toTime(), seconds.toTime())
     }
 
     private fun Long.toTime(): String {

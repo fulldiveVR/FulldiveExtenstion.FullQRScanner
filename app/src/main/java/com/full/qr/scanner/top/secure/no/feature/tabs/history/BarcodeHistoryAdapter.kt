@@ -4,6 +4,9 @@ import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -14,8 +17,8 @@ import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.toColorId
 import com.full.qr.scanner.top.secure.no.extension.toImageId
 import com.full.qr.scanner.top.secure.no.extension.toStringId
+import com.full.qr.scanner.top.secure.no.feature.common.view.IconButtonWithDelimiter
 import com.full.qr.scanner.top.secure.no.model.Barcode
-import kotlinx.android.synthetic.main.item_barcode_history.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -53,35 +56,35 @@ class BarcodeHistoryAdapter(private val listener: Listener) : PagedListAdapter<B
         }
 
         private fun showDate(barcode: Barcode) {
-            itemView.text_view_date.text = dateFormatter.format(barcode.date)
+            itemView.findViewById<TextView>(R.id.text_view_date).text = dateFormatter.format(barcode.date)
         }
 
         private fun showFormat(barcode: Barcode) {
-            itemView.text_view_format.setText(barcode.format.toStringId())
+            itemView.findViewById<TextView>(R.id.text_view_format).setText(barcode.format.toStringId())
         }
 
         private fun showText(barcode: Barcode) {
-            itemView.text_view_text.text = barcode.name ?: barcode.formattedText
+            itemView.findViewById<TextView>(R.id.text_view_text).text = barcode.name ?: barcode.formattedText
         }
 
         private fun showImage(barcode: Barcode) {
             val imageId = barcode.schema.toImageId() ?: barcode.format.toImageId()
             val image = AppCompatResources.getDrawable(itemView.context, imageId)
-            itemView.image_view_schema.setImageDrawable(image)
+            itemView.findViewById<ImageView>(R.id.image_view_schema).setImageDrawable(image)
         }
 
         private fun showImageBackgroundColor(barcode: Barcode) {
             val colorId = barcode.format.toColorId()
             val color = itemView.context.resources.getColor(colorId)
-            (itemView.layout_image.background.mutate() as GradientDrawable).setColor(color)
+            (itemView.findViewById<FrameLayout>(R.id.layout_image).background.mutate() as GradientDrawable).setColor(color)
         }
 
         private fun showIsFavorite(barcode: Barcode) {
-            itemView.image_view_favorite.isVisible = barcode.isFavorite
+            itemView.findViewById<ImageView>(R.id.image_view_favorite).isVisible = barcode.isFavorite
         }
 
         private fun showOrHideDelimiter(isLastItem: Boolean) {
-            itemView.delimiter.isInvisible = isLastItem
+            itemView.findViewById<View>(R.id.delimiter).isInvisible = isLastItem
         }
 
         private fun setClickListener(barcode: Barcode) {

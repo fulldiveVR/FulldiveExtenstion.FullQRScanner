@@ -5,11 +5,12 @@ import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.TextView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.formatOrNull
 import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog
-import kotlinx.android.synthetic.main.layout_date_time_picker_button.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,13 +44,13 @@ class DateTimePickerButton : FrameLayout {
         }
 
     private fun showHint(attributes: TypedArray) {
-        view.text_view_hint.text = attributes.getString(R.styleable.DateTimePickerButton_hint).orEmpty()
+        view.findViewById<TextView>(R.id.text_view_hint).text = attributes.getString(R.styleable.DateTimePickerButton_hint).orEmpty()
     }
 
     private fun showDateTimePickerDialog() {
         SingleDateAndTimePickerDialog.Builder(context)
             .backgroundColor(context.resources.getColor(R.color.date_time_picker_dialog_background_color))
-            .title(view.text_view_hint.text.toString())
+            .title(view.findViewById<TextView>(R.id.text_view_hint).text.toString())
             .mainColor(context.resources.getColor(R.color.blue))
             .listener { newDateTime ->
                 dateTime = newDateTime.time
@@ -59,6 +60,6 @@ class DateTimePickerButton : FrameLayout {
     }
 
     private fun showDateTime() {
-        view.text_view_date_time.text = dateFormatter.formatOrNull(dateTime).orEmpty()
+        view.findViewById<TextView>(R.id.text_view_date_time).text = dateFormatter.formatOrNull(dateTime).orEmpty()
     }
 }

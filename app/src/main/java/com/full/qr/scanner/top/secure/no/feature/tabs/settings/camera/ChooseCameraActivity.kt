@@ -3,11 +3,14 @@ package com.full.qr.scanner.top.secure.no.feature.tabs.settings.camera
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.settings
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
 import com.full.qr.scanner.top.secure.no.feature.BaseActivity
-import kotlinx.android.synthetic.main.activity_choose_camera.*
+import com.full.qr.scanner.top.secure.no.feature.common.view.SettingsRadioButton
 
 class ChooseCameraActivity : BaseActivity() {
 
@@ -34,33 +37,38 @@ class ChooseCameraActivity : BaseActivity() {
 
     private fun showSelectedCamera() {
         val isBackCamera = settings.isBackCamera
-        button_back_camera.isChecked = isBackCamera
-        button_front_camera.isChecked = isBackCamera.not()
+        findViewById<SettingsRadioButton>(R.id.button_back_camera).isChecked = isBackCamera
+        findViewById<SettingsRadioButton>(R.id.button_front_camera).isChecked = isBackCamera.not()
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view)
+            .applySystemWindowInsets(applyTop = true, applyBottom = true)
     }
 
     private fun handleToolbarBackClicked() {
-        toolbar.setNavigationOnClickListener {
-            finish()
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.setNavigationOnClickListener {
+                finish()
+            }
         }
     }
 
     private fun handleBackCameraButtonChecked() {
-        button_back_camera.setCheckedChangedListener { isChecked ->
-            if (isChecked) {
-                button_front_camera.isChecked = false
+        findViewById<SettingsRadioButton>(R.id.button_back_camera)?.let { button_back_camera ->
+            button_back_camera.setCheckedChangedListener { isChecked ->
+                if (isChecked) {
+                    findViewById<SettingsRadioButton>(R.id.button_front_camera).isChecked = false
+                }
+                settings.isBackCamera = isChecked
             }
-            settings.isBackCamera = isChecked
         }
     }
 
     private fun handleFrontCameraButtonChecked() {
-        button_front_camera.setCheckedChangedListener { isChecked ->
+        findViewById<SettingsRadioButton>(R.id.button_front_camera).setCheckedChangedListener { isChecked ->
             if (isChecked) {
-                button_back_camera.isChecked = false
+                findViewById<SettingsRadioButton>(R.id.button_back_camera).isChecked = false
             }
             settings.isBackCamera = isChecked.not()
         }

@@ -3,15 +3,18 @@ package com.full.qr.scanner.top.secure.no.feature.tabs.settings.formats
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.settings
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
 import com.full.qr.scanner.top.secure.no.extension.unsafeLazy
 import com.full.qr.scanner.top.secure.no.feature.BaseActivity
+import com.full.qr.scanner.top.secure.no.feature.common.view.SettingsRadioButton
 import com.full.qr.scanner.top.secure.no.usecase.SupportedBarcodeFormats
 import com.google.zxing.BarcodeFormat
-import kotlinx.android.synthetic.main.activity_supported_formats.*
 
 class SupportedFormatsActivity : BaseActivity(), FormatsAdapter.Listener {
 
@@ -39,18 +42,19 @@ class SupportedFormatsActivity : BaseActivity(), FormatsAdapter.Listener {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view)
+            .applySystemWindowInsets(applyTop = true, applyBottom = true)
     }
 
     private fun initRecyclerView() {
-        recycler_view_formats.apply {
+        findViewById<RecyclerView>(R.id.recycler_view_formats).apply {
             layoutManager = LinearLayoutManager(this@SupportedFormatsActivity)
             adapter = formatsAdapter
         }
     }
 
     private fun handleToolbarBackClicked() {
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             finish()
         }
     }

@@ -7,18 +7,18 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.full.qr.scanner.top.secure.no.R
-import kotlinx.android.synthetic.main.layout_icon_button.view.*
-
 
 class IconButton : FrameLayout {
     private val view: View
 
     var text: String
-        get() = view.text_view.text.toString()
-        set(value) { view.text_view.text = value }
+        get() = view.findViewById<TextView>(R.id.text_view).text.toString()
+        set(value) { view.findViewById<TextView>(R.id.text_view).text = value }
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, -1)
@@ -38,7 +38,7 @@ class IconButton : FrameLayout {
     private fun showIcon(attributes: TypedArray) {
         val iconResId = attributes.getResourceId(R.styleable.IconButton_icon, -1)
         val icon = AppCompatResources.getDrawable(context, iconResId)
-        view.image_view_schema.setImageDrawable(icon)
+        view.findViewById<ImageView>(R.id.image_view_schema).setImageDrawable(icon)
     }
 
     private fun showIconBackgroundColor(attributes: TypedArray) {
@@ -46,16 +46,16 @@ class IconButton : FrameLayout {
             R.styleable.IconButton_iconBackground,
             ContextCompat.getColor(view.context, R.color.green)
         )
-        (view.layout_image.background.mutate() as GradientDrawable).setColor(color)
+        (view.findViewById<FrameLayout>(R.id.layout_image).background.mutate() as GradientDrawable).setColor(color)
     }
 
     private fun showText(attributes: TypedArray) {
-        view.text_view.text = attributes.getString(R.styleable.IconButton_text).orEmpty()
+        view.findViewById<TextView>(R.id.text_view).text = attributes.getString(R.styleable.IconButton_text).orEmpty()
     }
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        view.image_view_schema.isEnabled = enabled
-        view.text_view.isEnabled = enabled
+        view.findViewById<ImageView>(R.id.image_view_schema).isEnabled = enabled
+        view.findViewById<TextView>(R.id.text_view).isEnabled = enabled
     }
 }

@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.feature.tabs.create.BaseCreateBarcodeFragment
 import com.full.qr.scanner.top.secure.no.model.schema.App
@@ -19,18 +21,23 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_create_qr_code_app.*
 
 class CreateQrCodeAppFragment : BaseCreateBarcodeFragment() {
     private val disposable = CompositeDisposable()
     private val appAdapter by unsafeLazy { AppAdapter(parentActivity) }
+    private lateinit var fragmentView: View
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_create_qr_code_app, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fragmentView = view
         initRecyclerView()
         loadApps()
     }
@@ -45,10 +52,11 @@ class CreateQrCodeAppFragment : BaseCreateBarcodeFragment() {
     }
 
     private fun initRecyclerView() {
-        recycler_view_apps.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = appAdapter
-        }
+        fragmentView.findViewById<RecyclerView>(R.id.recycler_view_apps)
+            .apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = appAdapter
+            }
     }
 
     private fun loadApps() {
@@ -81,8 +89,8 @@ class CreateQrCodeAppFragment : BaseCreateBarcodeFragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        progress_bar_loading.isVisible = isLoading
-        recycler_view_apps.isVisible = isLoading.not()
+        fragmentView.findViewById<ProgressBar>(R.id.progress_bar_loading).isVisible = isLoading
+        fragmentView.findViewById<RecyclerView>(R.id.recycler_view_apps).isVisible = isLoading.not()
     }
 
     private fun showApps(apps: List<ResolveInfo>) {

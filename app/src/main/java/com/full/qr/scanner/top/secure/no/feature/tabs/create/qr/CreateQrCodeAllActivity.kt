@@ -3,13 +3,15 @@ package com.full.qr.scanner.top.secure.no.feature.tabs.create.qr
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
 import com.full.qr.scanner.top.secure.no.feature.BaseActivity
+import com.full.qr.scanner.top.secure.no.feature.common.view.IconButtonWithDelimiter
 import com.full.qr.scanner.top.secure.no.feature.tabs.create.CreateBarcodeActivity
 import com.full.qr.scanner.top.secure.no.model.schema.BarcodeSchema
 import com.google.zxing.BarcodeFormat
-import kotlinx.android.synthetic.main.activity_create_qr_code_all.*
 
 class CreateQrCodeAllActivity : BaseActivity() {
 
@@ -30,30 +32,123 @@ class CreateQrCodeAllActivity : BaseActivity() {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view).applySystemWindowInsets(
+            applyTop = true,
+            applyBottom = true
+        )
     }
 
     private fun handleToolbarBackClicked() {
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             finish()
         }
     }
 
     private fun handleButtonsClicked() {
-        button_text.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.OTHER) }
-        button_url.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.URL) }
-        button_wifi.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.WIFI) }
-        button_location.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.GEO) }
-        button_otp.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.OTP_AUTH) }
-        button_contact_vcard.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.VCARD) }
-        button_contact_mecard.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.MECARD) }
-        button_event.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.VEVENT) }
-        button_phone.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.PHONE) }
-        button_email.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.EMAIL) }
-        button_sms.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.SMS) }
-        button_mms.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.MMS) }
-        button_cryptocurrency.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.CRYPTOCURRENCY) }
-        button_bookmark.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.BOOKMARK) }
-        button_app.setOnClickListener { CreateBarcodeActivity.start(this, BarcodeFormat.QR_CODE, BarcodeSchema.APP) }
+        findViewById<IconButtonWithDelimiter>(R.id.button_text).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.OTHER
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_url).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.URL
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_wifi).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.WIFI
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_location).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.GEO
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_otp).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.OTP_AUTH
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_contact_vcard).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.VCARD
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_contact_mecard).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.MECARD
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_event).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.VEVENT
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_phone).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.PHONE
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_email).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.EMAIL
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_sms).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.SMS
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_mms).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.MMS
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_cryptocurrency).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.CRYPTOCURRENCY
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_bookmark).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.BOOKMARK
+            )
+        }
+        findViewById<IconButtonWithDelimiter>(R.id.button_app).setOnClickListener {
+            CreateBarcodeActivity.start(
+                this,
+                BarcodeFormat.QR_CODE,
+                BarcodeSchema.APP
+            )
+        }
     }
 }

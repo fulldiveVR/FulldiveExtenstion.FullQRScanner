@@ -7,7 +7,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.widget.ImageView
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
@@ -25,12 +28,12 @@ import com.full.qr.scanner.top.secure.no.usecase.save
 import com.full.qr.scanner.top.secure.no.di.*
 import com.full.qr.scanner.top.secure.no.feature.tabs.create.barcode.*
 import com.full.qr.scanner.top.secure.no.feature.tabs.create.qr.*
+import com.full.qr.scanner.top.secure.no.usecase.Logger.isEnabled
 import com.google.zxing.BarcodeFormat
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_create_barcode.*
 
 
 class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
@@ -46,7 +49,12 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
         private const val CONTACTS_PERMISSION_REQUEST_CODE = 101
         private val CONTACTS_PERMISSIONS = arrayOf(Manifest.permission.READ_CONTACTS)
 
-        fun start(context: Context, barcodeFormat: BarcodeFormat, barcodeSchema: BarcodeSchema? = null, defaultText: String? = null) {
+        fun start(
+            context: Context,
+            barcodeFormat: BarcodeFormat,
+            barcodeSchema: BarcodeSchema? = null,
+            defaultText: String? = null
+        ) {
             val intent = Intent(context, CreateBarcodeActivity::class.java).apply {
                 putExtra(BARCODE_FORMAT_KEY, barcodeFormat.ordinal)
                 putExtra(BARCODE_SCHEMA_KEY, barcodeSchema?.ordinal ?: -1)
@@ -80,7 +88,7 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
                 R.drawable.ic_confirm_disabled
             }
 
-            toolbar.menu?.findItem(R.id.item_create_barcode)?.apply {
+            findViewById<Toolbar>(R.id.toolbar).menu?.findItem(R.id.item_create_barcode)?.apply {
                 icon = ContextCompat.getDrawable(this@CreateBarcodeActivity, iconId)
                 isEnabled = enabled
             }
@@ -120,7 +128,11 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == CONTACTS_PERMISSION_REQUEST_CODE && permissionsHelper.areAllPermissionsGranted(grantResults)) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CONTACTS_PERMISSION_REQUEST_CODE && permissionsHelper.areAllPermissionsGranted(
+                grantResults
+            )
+        ) {
             chooseContact()
         }
     }
@@ -135,7 +147,10 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view).applySystemWindowInsets(
+            applyTop = true,
+            applyBottom = true
+        )
     }
 
     private fun createBarcodeImmediatelyIfNeeded(): Boolean {
@@ -148,10 +163,12 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
                 createBarcodeForPlainText()
                 true
             }
+
             "text/x-vcard" -> {
                 createBarcodeForVCard()
                 true
             }
+
             else -> false
         }
     }
@@ -193,13 +210,13 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
     }
 
     private fun handleToolbarBackClicked() {
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             finish()
         }
     }
 
     private fun handleToolbarMenuItemClicked() {
-        toolbar.setOnMenuItemClickListener { item ->
+        findViewById<Toolbar>(R.id.toolbar).setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.item_phone -> choosePhone()
                 R.id.item_contacts -> requestContactsPermissions()
@@ -211,7 +228,7 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
 
     private fun showToolbarTitle() {
         val titleId = barcodeSchema?.toStringId() ?: barcodeFormat.toStringId()
-        toolbar.setTitle(titleId)
+        findViewById<Toolbar>(R.id.toolbar).setTitle(titleId)
     }
 
     private fun showToolbarMenu() {
@@ -221,12 +238,15 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
             BarcodeSchema.VCARD, BarcodeSchema.MECARD -> R.menu.menu_create_qr_code_contacts
             else -> R.menu.menu_create_barcode
         }
-        toolbar.inflateMenu(menuId)
+        findViewById<Toolbar>(R.id.toolbar).inflateMenu(menuId)
     }
 
     private fun showFragment() {
         val fragment = when {
-            barcodeFormat == BarcodeFormat.QR_CODE && barcodeSchema == BarcodeSchema.OTHER -> CreateQrCodeTextFragment.newInstance(defaultText)
+            barcodeFormat == BarcodeFormat.QR_CODE && barcodeSchema == BarcodeSchema.OTHER -> CreateQrCodeTextFragment.newInstance(
+                defaultText
+            )
+
             barcodeFormat == BarcodeFormat.QR_CODE && barcodeSchema == BarcodeSchema.URL -> CreateQrCodeUrlFragment()
             barcodeFormat == BarcodeFormat.QR_CODE && barcodeSchema == BarcodeSchema.BOOKMARK -> CreateQrCodeBookmarkFragment()
             barcodeFormat == BarcodeFormat.QR_CODE && barcodeSchema == BarcodeSchema.PHONE -> CreateQrCodePhoneFragment()
@@ -274,7 +294,11 @@ class CreateBarcodeActivity : BaseActivity(), AppAdapter.Listener {
     }
 
     private fun requestContactsPermissions() {
-        permissionsHelper.requestPermissions(this, CONTACTS_PERMISSIONS, CONTACTS_PERMISSION_REQUEST_CODE)
+        permissionsHelper.requestPermissions(
+            this,
+            CONTACTS_PERMISSIONS,
+            CONTACTS_PERMISSION_REQUEST_CODE
+        )
     }
 
     private fun chooseContact() {

@@ -3,17 +3,18 @@ package com.full.qr.scanner.top.secure.no.feature.tabs.settings.formats
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.toStringId
 import com.google.zxing.BarcodeFormat
-import kotlinx.android.synthetic.main.item_barcode_format.view.*
 
 class FormatsAdapter(
-        private val listener: Listener,
-        private val formats: List<BarcodeFormat>,
-        private val formatSelection: List<Boolean>
+    private val listener: Listener,
+    private val formats: List<BarcodeFormat>,
+    private val formatSelection: List<Boolean>
 ) : RecyclerView.Adapter<FormatsAdapter.ViewHolder>() {
 
     interface Listener {
@@ -38,16 +39,19 @@ class FormatsAdapter(
 
         fun show(position: Int) {
             val format = formats[position]
-            itemView.text_view_text.text = itemView.context.resources.getString(format.toStringId())
-            itemView.delimiter.isInvisible = position == formats.lastIndex
-            itemView.check_box.isChecked = formatSelection[position]
+            with(itemView) {
+                findViewById<TextView>(R.id.text_view_text).text =
+                    itemView.context.resources.getString(format.toStringId())
+                findViewById<View>(R.id.delimiter).isInvisible = position == formats.lastIndex
+                findViewById<CheckBox>(R.id.check_box).isChecked = formatSelection[position]
 
-            itemView.check_box.setOnCheckedChangeListener { _, isChecked ->
-               listener.onFormatChecked(format, isChecked)
-            }
+                findViewById<CheckBox>(R.id.check_box).setOnCheckedChangeListener { _, isChecked ->
+                    listener.onFormatChecked(format, isChecked)
+                }
 
-            itemView.setOnClickListener {
-                itemView.check_box.toggle()
+                itemView.setOnClickListener {
+                    findViewById<CheckBox>(R.id.check_box).toggle()
+                }
             }
         }
     }

@@ -3,10 +3,12 @@ package com.full.qr.scanner.top.secure.no.feature.tabs.settings.permissions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.CheckBox
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
 import com.full.qr.scanner.top.secure.no.feature.BaseActivity
-import kotlinx.android.synthetic.main.activity_all_permissions.*
 
 class AllPermissionsActivity : BaseActivity() {
 
@@ -20,7 +22,10 @@ class AllPermissionsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_permissions)
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
-        toolbar.setNavigationOnClickListener { finish() }
+        findViewById<CoordinatorLayout>(R.id.root_view).applySystemWindowInsets(
+            applyTop = true,
+            applyBottom = true
+        )
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener { finish() }
     }
 }

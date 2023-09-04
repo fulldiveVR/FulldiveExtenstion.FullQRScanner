@@ -9,8 +9,14 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.view.MotionEvent.ACTION_UP
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
 import com.full.qr.scanner.top.secure.no.extension.showError
@@ -21,11 +27,11 @@ import com.full.qr.scanner.top.secure.no.usecase.save
 import com.full.qr.scanner.top.secure.no.di.*
 import com.google.zxing.Result
 import com.isseiaoki.simplecropview.CropImageView
+import com.jakewharton.rxbinding2.view.touches
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_scan_barcode_from_file.*
 import java.util.concurrent.TimeUnit
 
 class ScanBarcodeFromFileActivity : BaseActivity() {
@@ -75,8 +81,16 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == PERMISSIONS_REQUEST_CODE && permissionsHelper.areAllPermissionsGranted(grantResults)) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSIONS_REQUEST_CODE && permissionsHelper.areAllPermissionsGranted(
+                grantResults
+            )
+        ) {
             imageUri?.apply(::showImage)
         } else {
             finish()
@@ -90,7 +104,10 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view).applySystemWindowInsets(
+            applyTop = true,
+            applyBottom = true
+        )
     }
 
     private fun showImageFromIntent(): Boolean {
@@ -120,14 +137,15 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
         startChooseImageActivity(CHOOSE_FILE_AGAIN_REQUEST_CODE, null)
     }
 
-    private fun startChooseImageActivity(requestCode: Int,  savedInstanceState: Bundle?) {
+    private fun startChooseImageActivity(requestCode: Int, savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             return
         }
 
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-        }
+        val intent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
+            }
 
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, requestCode)
@@ -135,16 +153,22 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
     }
 
     private fun handleToolbarBackPressed() {
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             finish()
         }
     }
 
     private fun handleToolbarMenuItemClicked() {
-        toolbar.setOnMenuItemClickListener { item ->
+        findViewById<Toolbar>(R.id.toolbar).setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.item_rotate_left -> crop_image_view.rotateImage(CropImageView.RotateDegrees.ROTATE_M90D)
-                R.id.item_rotate_right -> crop_image_view.rotateImage(CropImageView.RotateDegrees.ROTATE_90D)
+                R.id.item_rotate_left -> findViewById<MyCropImageView>(R.id.crop_image_view).rotateImage(
+                    CropImageView.RotateDegrees.ROTATE_M90D
+                )
+
+                R.id.item_rotate_right -> findViewById<MyCropImageView>(R.id.crop_image_view).rotateImage(
+                    CropImageView.RotateDegrees.ROTATE_90D
+                )
+
                 R.id.item_change_image -> startChooseImageActivityAgain()
             }
             return@setOnMenuItemClickListener true
@@ -152,7 +176,7 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
     }
 
     private fun handleImageCropAreaChanged() {
-        crop_image_view.touches()
+        findViewById<MyCropImageView>(R.id.crop_image_view).touches()
             .filter { it.action == ACTION_UP }
             .debounce(400, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -161,7 +185,7 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
     }
 
     private fun handleScanButtonClicked() {
-        button_scan.setOnClickListener {
+        findViewById<Button>(R.id.button_scan).setOnClickListener {
             saveScanResult()
         }
     }
@@ -169,7 +193,7 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
     private fun showImage(imageUri: Uri) {
         this.imageUri = imageUri
 
-        crop_image_view
+        findViewById<MyCropImageView>(R.id.crop_image_view)
             .load(imageUri)
             .executeAsCompletable()
             .subscribeOn(Schedulers.io())
@@ -183,7 +207,12 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
 
     private fun showErrorOrRequestPermissions(error: Throwable) {
         when (error) {
-            is SecurityException -> permissionsHelper.requestPermissions(this, PERMISSIONS, PERMISSIONS_REQUEST_CODE)
+            is SecurityException -> permissionsHelper.requestPermissions(
+                this,
+                PERMISSIONS,
+                PERMISSIONS_REQUEST_CODE
+            )
+
             else -> showError(error)
         }
     }
@@ -195,7 +224,7 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
         scanDisposable.clear()
         lastScanResult = null
 
-        crop_image_view
+        findViewById<MyCropImageView>(R.id.crop_image_view)
             .cropAsSingle()
             .subscribeOn(Schedulers.io())
             .subscribe(::scanCroppedImage, ::showError)
@@ -242,12 +271,12 @@ class ScanBarcodeFromFileActivity : BaseActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        progress_bar_loading.isVisible = isLoading
-        button_scan.isInvisible = isLoading
+        findViewById<ProgressBar>(R.id.progress_bar_loading).isVisible = isLoading
+        findViewById<Button>(R.id.button_scan).isInvisible = isLoading
     }
 
     private fun showScanButtonEnabled(isEnabled: Boolean) {
-        button_scan.isEnabled = isEnabled
+        findViewById<Button>(R.id.button_scan).isEnabled = isEnabled
     }
 
     private fun navigateToBarcodeScreen(barcode: Barcode) {

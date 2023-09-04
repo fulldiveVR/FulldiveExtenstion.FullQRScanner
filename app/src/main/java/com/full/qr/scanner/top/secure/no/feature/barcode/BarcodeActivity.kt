@@ -10,9 +10,16 @@ import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import android.provider.Settings
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.print.PrintHelper
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.feature.BaseActivity
@@ -31,16 +38,17 @@ import com.full.qr.scanner.top.secure.no.usecase.Logger
 import com.full.qr.scanner.top.secure.no.usecase.save
 import com.full.qr.scanner.top.secure.no.di.*
 import com.full.qr.scanner.top.secure.no.extension.*
+import com.full.qr.scanner.top.secure.no.feature.common.view.IconButton
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_barcode.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listener, ChooseSearchEngineDialogFragment.Listener, EditBarcodeNameDialogFragment.Listener {
+class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listener,
+    ChooseSearchEngineDialogFragment.Listener, EditBarcodeNameDialogFragment.Listener {
 
     companion object {
         private const val BARCODE_KEY = "BARCODE_KEY"
@@ -59,7 +67,8 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
     private val dateFormatter = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.ENGLISH)
 
     private val originalBarcode by unsafeLazy {
-        intent?.getSerializableExtra(BARCODE_KEY) as? Barcode ?: throw IllegalArgumentException("No barcode passed")
+        intent?.getSerializableExtra(BARCODE_KEY) as? Barcode
+            ?: throw IllegalArgumentException("No barcode passed")
     }
 
     private val isCreated by unsafeLazy {
@@ -114,7 +123,10 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
 
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view)?.applySystemWindowInsets(
+            applyTop = true,
+            applyBottom = true
+        )
     }
 
     private fun saveOriginalBrightness() {
@@ -155,72 +167,89 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
 
 
     private fun handleToolbarBackPressed() {
-        toolbar.setNavigationOnClickListener {
-            finish()
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.setNavigationOnClickListener {
+                finish()
+            }
         }
     }
 
     private fun handleToolbarMenuClicked() {
-        toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.item_increase_brightness -> {
-                    increaseBrightnessToMax()
-                    toolbar.menu.findItem(R.id.item_increase_brightness).isVisible = false
-                    toolbar.menu.findItem(R.id.item_decrease_brightness).isVisible = true
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.item_increase_brightness -> {
+                        increaseBrightnessToMax()
+                        toolbar.menu.findItem(R.id.item_increase_brightness).isVisible = false
+                        toolbar.menu.findItem(R.id.item_decrease_brightness).isVisible = true
+                    }
+
+                    R.id.item_decrease_brightness -> {
+                        restoreOriginalBrightness()
+                        toolbar.menu.findItem(R.id.item_increase_brightness).isVisible = true
+                        toolbar.menu.findItem(R.id.item_decrease_brightness).isVisible = false
+                    }
+
+                    R.id.item_add_to_favorites -> toggleIsFavorite()
+                    R.id.item_show_barcode_image -> navigateToBarcodeImageActivity()
+                    R.id.item_save -> saveBarcode()
+                    R.id.item_delete -> showDeleteBarcodeConfirmationDialog()
                 }
-                R.id.item_decrease_brightness -> {
-                    restoreOriginalBrightness()
-                    toolbar.menu.findItem(R.id.item_increase_brightness).isVisible = true
-                    toolbar.menu.findItem(R.id.item_decrease_brightness).isVisible = false
-                }
-                R.id.item_add_to_favorites -> toggleIsFavorite()
-                R.id.item_show_barcode_image -> navigateToBarcodeImageActivity()
-                R.id.item_save -> saveBarcode()
-                R.id.item_delete -> showDeleteBarcodeConfirmationDialog()
+                return@setOnMenuItemClickListener true
             }
-            return@setOnMenuItemClickListener true
         }
     }
 
     private fun handleButtonsClicked() {
-        button_edit_name.setOnClickListener { showEditBarcodeNameDialog() }
+        findViewById<ImageView>(R.id.button_edit_name)?.setOnClickListener { showEditBarcodeNameDialog() }
+        findViewById<IconButton>(R.id.button_search_on_web)?.setOnClickListener { searchBarcodeTextOnInternet() }
+        findViewById<IconButton>(R.id.button_add_to_calendar)?.setOnClickListener { addToCalendar() }
+        findViewById<IconButton>(R.id.button_add_to_contacts)?.setOnClickListener { addToContacts() }
+        findViewById<IconButton>(R.id.button_show_location)?.setOnClickListener { showLocation() }
+        findViewById<IconButton>(R.id.button_connect_to_wifi)?.setOnClickListener { connectToWifi() }
+        findViewById<IconButton>(R.id.button_open_wifi_settings)?.setOnClickListener { openWifiSettings() }
+        findViewById<IconButton>(R.id.button_copy_network_name)?.setOnClickListener { copyNetworkNameToClipboard() }
+        findViewById<IconButton>(R.id.button_copy_network_password)?.setOnClickListener { copyNetworkPasswordToClipboard() }
+        findViewById<IconButton>(R.id.button_open_app)?.setOnClickListener { openApp() }
+        findViewById<IconButton>(R.id.button_open_in_app_market)?.setOnClickListener { openInAppMarket() }
+        findViewById<IconButton>(R.id.button_open_in_youtube)?.setOnClickListener { openInYoutube() }
+        findViewById<IconButton>(R.id.button_show_otp)?.setOnClickListener { showOtp() }
+        findViewById<IconButton>(R.id.button_open_otp)?.setOnClickListener { openOtpInOtherApp() }
+        findViewById<IconButton>(R.id.button_open_bitcoin_uri)?.setOnClickListener { openBitcoinUrl() }
+        findViewById<IconButton>(R.id.button_open_link)?.setOnClickListener { openLink() }
+        findViewById<IconButton>(R.id.button_save_bookmark)?.setOnClickListener { saveBookmark() }
 
-        button_search_on_web.setOnClickListener { searchBarcodeTextOnInternet() }
-        button_add_to_calendar.setOnClickListener { addToCalendar() }
-        button_add_to_contacts.setOnClickListener { addToContacts() }
-        button_show_location.setOnClickListener { showLocation() }
-        button_connect_to_wifi.setOnClickListener { connectToWifi() }
-        button_open_wifi_settings.setOnClickListener { openWifiSettings() }
-        button_copy_network_name.setOnClickListener { copyNetworkNameToClipboard() }
-        button_copy_network_password.setOnClickListener { copyNetworkPasswordToClipboard() }
-        button_open_app.setOnClickListener { openApp() }
-        button_open_in_app_market.setOnClickListener { openInAppMarket() }
-        button_open_in_youtube.setOnClickListener { openInYoutube() }
-        button_show_otp.setOnClickListener { showOtp() }
-        button_open_otp.setOnClickListener { openOtpInOtherApp() }
-        button_open_bitcoin_uri.setOnClickListener { openBitcoinUrl() }
-        button_open_link.setOnClickListener { openLink() }
-        button_save_bookmark.setOnClickListener { saveBookmark() }
+        findViewById<IconButton>(R.id.button_call_phone_1)?.setOnClickListener { callPhone(barcode.phone) }
+        findViewById<IconButton>(R.id.button_call_phone_2)?.setOnClickListener { callPhone(barcode.secondaryPhone) }
+        findViewById<IconButton>(R.id.button_call_phone_3)?.setOnClickListener { callPhone(barcode.tertiaryPhone) }
 
-        button_call_phone_1.setOnClickListener { callPhone(barcode.phone) }
-        button_call_phone_2.setOnClickListener { callPhone(barcode.secondaryPhone) }
-        button_call_phone_3.setOnClickListener { callPhone(barcode.tertiaryPhone) }
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_1)?.setOnClickListener {
+            sendSmsOrMms(
+                barcode.phone
+            )
+        }
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_2)?.setOnClickListener {
+            sendSmsOrMms(
+                barcode.secondaryPhone
+            )
+        }
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_3)?.setOnClickListener {
+            sendSmsOrMms(
+                barcode.tertiaryPhone
+            )
+        }
 
-        button_send_sms_or_mms_1.setOnClickListener { sendSmsOrMms(barcode.phone) }
-        button_send_sms_or_mms_2.setOnClickListener { sendSmsOrMms(barcode.secondaryPhone) }
-        button_send_sms_or_mms_3.setOnClickListener { sendSmsOrMms(barcode.tertiaryPhone) }
+        findViewById<IconButton>(R.id.button_send_email_1)?.setOnClickListener { sendEmail(barcode.email) }
+        findViewById<IconButton>(R.id.button_send_email_2)?.setOnClickListener { sendEmail(barcode.secondaryEmail) }
+        findViewById<IconButton>(R.id.button_send_email_3)?.setOnClickListener { sendEmail(barcode.tertiaryEmail) }
 
-        button_send_email_1.setOnClickListener { sendEmail(barcode.email) }
-        button_send_email_2.setOnClickListener { sendEmail(barcode.secondaryEmail) }
-        button_send_email_3.setOnClickListener { sendEmail(barcode.tertiaryEmail) }
-
-        button_share_as_text.setOnClickListener { shareBarcodeAsText() }
-        button_copy.setOnClickListener { copyBarcodeTextToClipboard() }
-        button_search.setOnClickListener { searchBarcodeTextOnInternet() }
-        button_save_as_text.setOnClickListener { navigateToSaveBarcodeAsTextActivity() }
-        button_share_as_image.setOnClickListener { shareBarcodeAsImage() }
-        button_save_as_image.setOnClickListener { navigateToSaveBarcodeAsImageActivity() }
-        button_print.setOnClickListener { printBarcode() }
+        findViewById<IconButton>(R.id.button_share_as_text)?.setOnClickListener { shareBarcodeAsText() }
+        findViewById<IconButton>(R.id.button_copy)?.setOnClickListener { copyBarcodeTextToClipboard() }
+        findViewById<IconButton>(R.id.button_search)?.setOnClickListener { searchBarcodeTextOnInternet() }
+        findViewById<IconButton>(R.id.button_save_as_text)?.setOnClickListener { navigateToSaveBarcodeAsTextActivity() }
+        findViewById<IconButton>(R.id.button_share_as_image)?.setOnClickListener { shareBarcodeAsImage() }
+        findViewById<IconButton>(R.id.button_save_as_image)?.setOnClickListener { navigateToSaveBarcodeAsImageActivity() }
+        findViewById<IconButton>(R.id.button_print)?.setOnClickListener { printBarcode() }
     }
 
 
@@ -264,23 +293,25 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
     }
 
     private fun saveBarcode() {
-        toolbar?.menu?.findItem(R.id.item_save)?.isVisible = false
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar?.menu?.findItem(R.id.item_save)?.isVisible = false
 
-        barcodeDatabase.save(originalBarcode, settings.doNotSaveDuplicates)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { id ->
-                    barcode.id = id
-                    button_edit_name.isVisible = true
-                    toolbar?.menu?.findItem(R.id.item_delete)?.isVisible = true
-                },
-                { error ->
-                    toolbar?.menu?.findItem(R.id.item_save)?.isVisible = true
-                    showError(error)
-                }
-            )
-            .addTo(disposable)
+            barcodeDatabase.save(originalBarcode, settings.doNotSaveDuplicates)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { id ->
+                        barcode.id = id
+                        findViewById<ImageView>(R.id.button_edit_name).isVisible = true
+                        toolbar?.menu?.findItem(R.id.item_delete)?.isVisible = true
+                    },
+                    { error ->
+                        toolbar?.menu?.findItem(R.id.item_save)?.isVisible = true
+                        showError(error)
+                    }
+                )
+                .addTo(disposable)
+        }
     }
 
     private fun deleteBarcode() {
@@ -321,22 +352,52 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
             putExtra(ContactsContract.Intents.Insert.JOB_TITLE, barcode.jobTitle.orEmpty())
 
             putExtra(ContactsContract.Intents.Insert.PHONE, barcode.phone.orEmpty())
-            putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, barcode.phoneType.orEmpty().toPhoneType())
+            putExtra(
+                ContactsContract.Intents.Insert.PHONE_TYPE,
+                barcode.phoneType.orEmpty().toPhoneType()
+            )
 
-            putExtra(ContactsContract.Intents.Insert.SECONDARY_PHONE, barcode.secondaryPhone.orEmpty())
-            putExtra(ContactsContract.Intents.Insert.SECONDARY_PHONE_TYPE, barcode.secondaryPhoneType.orEmpty().toPhoneType())
+            putExtra(
+                ContactsContract.Intents.Insert.SECONDARY_PHONE,
+                barcode.secondaryPhone.orEmpty()
+            )
+            putExtra(
+                ContactsContract.Intents.Insert.SECONDARY_PHONE_TYPE,
+                barcode.secondaryPhoneType.orEmpty().toPhoneType()
+            )
 
-            putExtra(ContactsContract.Intents.Insert.TERTIARY_PHONE, barcode.tertiaryPhone.orEmpty())
-            putExtra(ContactsContract.Intents.Insert.TERTIARY_PHONE_TYPE, barcode.tertiaryPhoneType.orEmpty().toPhoneType())
+            putExtra(
+                ContactsContract.Intents.Insert.TERTIARY_PHONE,
+                barcode.tertiaryPhone.orEmpty()
+            )
+            putExtra(
+                ContactsContract.Intents.Insert.TERTIARY_PHONE_TYPE,
+                barcode.tertiaryPhoneType.orEmpty().toPhoneType()
+            )
 
             putExtra(ContactsContract.Intents.Insert.EMAIL, barcode.email.orEmpty())
-            putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, barcode.emailType.orEmpty().toEmailType())
+            putExtra(
+                ContactsContract.Intents.Insert.EMAIL_TYPE,
+                barcode.emailType.orEmpty().toEmailType()
+            )
 
-            putExtra(ContactsContract.Intents.Insert.SECONDARY_EMAIL, barcode.secondaryEmail.orEmpty())
-            putExtra(ContactsContract.Intents.Insert.SECONDARY_EMAIL_TYPE, barcode.secondaryEmailType.orEmpty().toEmailType())
+            putExtra(
+                ContactsContract.Intents.Insert.SECONDARY_EMAIL,
+                barcode.secondaryEmail.orEmpty()
+            )
+            putExtra(
+                ContactsContract.Intents.Insert.SECONDARY_EMAIL_TYPE,
+                barcode.secondaryEmailType.orEmpty().toEmailType()
+            )
 
-            putExtra(ContactsContract.Intents.Insert.TERTIARY_EMAIL, barcode.tertiaryEmail.orEmpty())
-            putExtra(ContactsContract.Intents.Insert.TERTIARY_EMAIL_TYPE, barcode.tertiaryEmailType.orEmpty().toEmailType())
+            putExtra(
+                ContactsContract.Intents.Insert.TERTIARY_EMAIL,
+                barcode.tertiaryEmail.orEmpty()
+            )
+            putExtra(
+                ContactsContract.Intents.Insert.TERTIARY_EMAIL_TYPE,
+                barcode.tertiaryEmailType.orEmpty().toEmailType()
+            )
 
             putExtra(ContactsContract.Intents.Insert.NOTES, barcode.note.orEmpty())
         }
@@ -376,15 +437,15 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
 
         wifiConnector
             .connect(
-                    this,
-                    barcode.networkAuthType.orEmpty(),
-                    barcode.networkName.orEmpty(),
-                    barcode.networkPassword.orEmpty(),
-                    barcode.isHidden.orFalse(),
-                    barcode.anonymousIdentity.orEmpty(),
-                    barcode.identity.orEmpty(),
-                    barcode.eapMethod.orEmpty(),
-                    barcode.phase2Method.orEmpty()
+                this,
+                barcode.networkAuthType.orEmpty(),
+                barcode.networkName.orEmpty(),
+                barcode.networkPassword.orEmpty(),
+                barcode.isHidden.orFalse(),
+                barcode.anonymousIdentity.orEmpty(),
+                barcode.identity.orEmpty(),
+                barcode.eapMethod.orEmpty(),
+                barcode.phase2Method.orEmpty()
             )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -471,9 +532,9 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
     private fun searchBarcodeTextOnInternet() {
         val searchEngine = settings.searchEngine
         when (searchEngine) {
-           SearchEngine.NONE -> performWebSearch()
-           SearchEngine.ASK_EVERY_TIME -> showSearchEnginesDialog()
-           else -> performWebSearchUsingSearchEngine(searchEngine)
+            SearchEngine.NONE -> performWebSearch()
+            SearchEngine.ASK_EVERY_TIME -> showSearchEnginesDialog()
+            else -> performWebSearchUsingSearchEngine(searchEngine)
         }
     }
 
@@ -548,13 +609,15 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
     }
 
     private fun showBarcodeMenuIfNeeded() {
-        toolbar.inflateMenu(R.menu.menu_barcode)
-        toolbar.menu.apply {
-            findItem(R.id.item_increase_brightness).isVisible = isCreated
-            findItem(R.id.item_add_to_favorites)?.isVisible = barcode.isInDb
-            findItem(R.id.item_show_barcode_image)?.isVisible = isCreated.not()
-            findItem(R.id.item_save)?.isVisible = barcode.isInDb.not()
-            findItem(R.id.item_delete)?.isVisible = barcode.isInDb
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.inflateMenu(R.menu.menu_barcode)
+            toolbar.menu.apply {
+                findItem(R.id.item_increase_brightness).isVisible = isCreated
+                findItem(R.id.item_add_to_favorites)?.isVisible = barcode.isInDb
+                findItem(R.id.item_show_barcode_image)?.isVisible = isCreated.not()
+                findItem(R.id.item_save)?.isVisible = barcode.isInDb.not()
+                findItem(R.id.item_delete)?.isVisible = barcode.isInDb
+            }
         }
     }
 
@@ -568,7 +631,10 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
         } else {
             R.drawable.ic_favorite_unchecked
         }
-        toolbar.menu?.findItem(R.id.item_add_to_favorites)?.icon = ContextCompat.getDrawable(this, iconId)
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.menu?.findItem(R.id.item_add_to_favorites)?.icon =
+                ContextCompat.getDrawable(this, iconId)
+        }
     }
 
     private fun showBarcodeImageIfNeeded() {
@@ -579,29 +645,49 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
 
     private fun showBarcodeImage() {
         try {
-            val bitmap = barcodeImageGenerator.generateBitmap(originalBarcode, 2000, 2000, 0, settings.barcodeContentColor, settings.barcodeBackgroundColor)
-            layout_barcode_image_background.isVisible = true
-            image_view_barcode.isVisible = true
-            image_view_barcode.setImageBitmap(bitmap)
-            image_view_barcode.setBackgroundColor(settings.barcodeBackgroundColor)
-            layout_barcode_image_background.setBackgroundColor(settings.barcodeBackgroundColor)
+            val bitmap = barcodeImageGenerator.generateBitmap(
+                originalBarcode,
+                2000,
+                2000,
+                0,
+                settings.barcodeContentColor,
+                settings.barcodeBackgroundColor
+            )
+
+            findViewById<FrameLayout>(R.id.layout_barcode_image_background).isVisible = true
+            findViewById<ImageView>(R.id.image_view_barcode)?.let { image_view_barcode ->
+                image_view_barcode.isVisible = true
+                image_view_barcode.setImageBitmap(bitmap)
+                image_view_barcode.setBackgroundColor(settings.barcodeBackgroundColor)
+            }
+
+            findViewById<FrameLayout>(R.id.layout_barcode_image_background).setBackgroundColor(
+                settings.barcodeBackgroundColor
+            )
 
             if (settings.isDarkTheme.not() || settings.areBarcodeColorsInversed) {
-                layout_barcode_image_background.setPadding(0, 0, 0, 0)
+                findViewById<FrameLayout>(R.id.layout_barcode_image_background).setPadding(
+                    0,
+                    0,
+                    0,
+                    0
+                )
             }
         } catch (ex: Exception) {
             Logger.log(ex)
-            image_view_barcode.isVisible = false
+            findViewById<FrameLayout>(R.id.layout_barcode_image_background).isVisible = false
         }
     }
 
     private fun showBarcodeDate() {
-        text_view_date.text = dateFormatter.format(barcode.date)
+        findViewById<TextView>(R.id.text_view_date).text = dateFormatter.format(barcode.date)
     }
 
     private fun showBarcodeFormat() {
         val format = barcode.format.toStringId()
-        toolbar.setTitle(format)
+        findViewById<Toolbar>(R.id.toolbar)?.let { toolbar ->
+            toolbar.setTitle(format)
+        }
     }
 
     private fun showBarcodeName() {
@@ -609,15 +695,19 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
     }
 
     private fun showBarcodeName(name: String?) {
-        text_view_barcode_name.isVisible = name.isNullOrBlank().not()
-        text_view_barcode_name.text = name.orEmpty()
+        findViewById<TextView>(R.id.text_view_barcode_name)?.let { text_view_barcode_name ->
+            text_view_barcode_name.isVisible = name.isNullOrBlank().not()
+            text_view_barcode_name.text = name.orEmpty()
+        }
     }
 
     private fun showBarcodeText() {
-        text_view_barcode_text.text = if (isCreated) {
-            barcode.text
-        } else {
-            barcode.formattedText
+        findViewById<TextView>(R.id.text_view_barcode_text)?.let { text_view_barcode_text ->
+            text_view_barcode_text.text = if (isCreated) {
+                barcode.text
+            } else {
+                barcode.formattedText
+            }
         }
     }
 
@@ -649,73 +739,109 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
     }
 
     private fun showFullCountryName(fullCountryName: String) {
-        text_view_country.apply {
-            text = fullCountryName
-            isVisible = fullCountryName.isBlank().not()
+        findViewById<TextView>(R.id.text_view_country)?.let { text_view_country ->
+            text_view_country.apply {
+                text = fullCountryName
+                isVisible = fullCountryName.isBlank().not()
+            }
         }
     }
 
     private fun showOrHideButtons() {
-        button_search.isVisible = isCreated.not()
-        button_edit_name.isVisible = barcode.isInDb
+        findViewById<IconButton>(R.id.button_search)?.isVisible = isCreated.not()
+        findViewById<ImageView>(R.id.button_edit_name)?.isVisible = barcode.isInDb
 
         if (isCreated) {
             return
         }
 
-        button_search_on_web.isVisible = barcode.isProductBarcode
-        button_search.isVisible = barcode.isProductBarcode.not()
+        findViewById<IconButton>(R.id.button_search_on_web)?.isVisible = barcode.isProductBarcode
+        findViewById<IconButton>(R.id.button_search)?.isVisible = barcode.isProductBarcode.not()
+        findViewById<IconButton>(R.id.button_add_to_calendar)?.isVisible =
+            barcode.schema == BarcodeSchema.VEVENT
+        findViewById<IconButton>(R.id.button_add_to_contacts)?.isVisible =
+            barcode.schema == BarcodeSchema.VCARD || barcode.schema == BarcodeSchema.MECARD
 
-        button_add_to_calendar.isVisible = barcode.schema == BarcodeSchema.VEVENT
-        button_add_to_contacts.isVisible = barcode.schema == BarcodeSchema.VCARD || barcode.schema == BarcodeSchema.MECARD
+        findViewById<IconButton>(R.id.button_call_phone_1)?.isVisible =
+            barcode.phone.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_call_phone_2)?.isVisible =
+            barcode.secondaryPhone.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_call_phone_3)?.isVisible =
+            barcode.tertiaryPhone.isNullOrEmpty().not()
 
-        button_call_phone_1.isVisible = barcode.phone.isNullOrEmpty().not()
-        button_call_phone_2.isVisible = barcode.secondaryPhone.isNullOrEmpty().not()
-        button_call_phone_3.isVisible = barcode.tertiaryPhone.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_1)?.isVisible =
+            barcode.phone.isNullOrEmpty().not() || barcode.smsBody.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_2)?.isVisible =
+            barcode.secondaryPhone.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_3)?.isVisible =
+            barcode.tertiaryPhone.isNullOrEmpty().not()
 
-        button_send_sms_or_mms_1.isVisible = barcode.phone.isNullOrEmpty().not() || barcode.smsBody.isNullOrEmpty().not()
-        button_send_sms_or_mms_2.isVisible = barcode.secondaryPhone.isNullOrEmpty().not()
-        button_send_sms_or_mms_3.isVisible = barcode.tertiaryPhone.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_send_email_1)?.isVisible =
+            barcode.email.isNullOrEmpty().not() || barcode.emailSubject.isNullOrEmpty()
+                .not() || barcode.emailBody.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_send_email_2)?.isVisible =
+            barcode.secondaryEmail.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_send_email_3)?.isVisible =
+            barcode.tertiaryEmail.isNullOrEmpty().not()
 
-        button_send_email_1.isVisible = barcode.email.isNullOrEmpty().not() || barcode.emailSubject.isNullOrEmpty().not() || barcode.emailBody.isNullOrEmpty().not()
-        button_send_email_2.isVisible = barcode.secondaryEmail.isNullOrEmpty().not()
-        button_send_email_3.isVisible = barcode.tertiaryEmail.isNullOrEmpty().not()
-
-        button_show_location.isVisible = barcode.geoUri.isNullOrEmpty().not()
-        button_connect_to_wifi.isVisible = barcode.schema == BarcodeSchema.WIFI
-        button_open_wifi_settings.isVisible = barcode.schema == BarcodeSchema.WIFI
-        button_copy_network_name.isVisible = barcode.networkName.isNullOrEmpty().not()
-        button_copy_network_password.isVisible = barcode.networkPassword.isNullOrEmpty().not()
-        button_open_app.isVisible = barcode.appPackage.isNullOrEmpty().not() && isAppInstalled(barcode.appPackage)
-        button_open_in_app_market.isVisible = barcode.appMarketUrl.isNullOrEmpty().not()
-        button_open_in_youtube.isVisible = barcode.youtubeUrl.isNullOrEmpty().not()
-        button_show_otp.isVisible = barcode.otpUrl.isNullOrEmpty().not()
-        button_open_otp.isVisible = barcode.otpUrl.isNullOrEmpty().not()
-        button_open_bitcoin_uri.isVisible = barcode.bitcoinUri.isNullOrEmpty().not()
-        button_open_link.isVisible = barcode.url.isNullOrEmpty().not()
-        button_save_bookmark.isVisible = barcode.schema == BarcodeSchema.BOOKMARK
+        findViewById<IconButton>(R.id.button_show_location)?.isVisible =
+            barcode.geoUri.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_connect_to_wifi)?.isVisible =
+            barcode.schema == BarcodeSchema.WIFI
+        findViewById<IconButton>(R.id.button_open_wifi_settings)?.isVisible =
+            barcode.schema == BarcodeSchema.WIFI
+        findViewById<IconButton>(R.id.button_copy_network_name)?.isVisible =
+            barcode.networkName.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_copy_network_password)?.isVisible =
+            barcode.networkPassword.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_open_app)?.isVisible =
+            barcode.appPackage.isNullOrEmpty().not() && isAppInstalled(barcode.appPackage)
+        findViewById<IconButton>(R.id.button_open_in_app_market)?.isVisible =
+            barcode.appMarketUrl.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_open_in_youtube)?.isVisible =
+            barcode.youtubeUrl.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_show_otp)?.isVisible =
+            barcode.otpUrl.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_open_otp)?.isVisible =
+            barcode.otpUrl.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_open_bitcoin_uri)?.isVisible =
+            barcode.bitcoinUri.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_open_link)?.isVisible =
+            barcode.url.isNullOrEmpty().not()
+        findViewById<IconButton>(R.id.button_save_bookmark)?.isVisible =
+            barcode.schema == BarcodeSchema.BOOKMARK
     }
 
     private fun showButtonText() {
-        button_call_phone_1.text = getString(R.string.activity_barcode_call_phone, barcode.phone)
-        button_call_phone_2.text = getString(R.string.activity_barcode_call_phone, barcode.secondaryPhone)
-        button_call_phone_3.text = getString(R.string.activity_barcode_call_phone, barcode.tertiaryPhone)
+        findViewById<IconButton>(R.id.button_call_phone_1)?.text =
+            getString(R.string.activity_barcode_call_phone, barcode.phone)
+        findViewById<IconButton>(R.id.button_call_phone_2)?.text =
+            getString(R.string.activity_barcode_call_phone, barcode.secondaryPhone)
+        findViewById<IconButton>(R.id.button_call_phone_3)?.text =
+            getString(R.string.activity_barcode_call_phone, barcode.tertiaryPhone)
 
-        button_send_sms_or_mms_1.text = getString(R.string.activity_barcode_send_sms, barcode.phone)
-        button_send_sms_or_mms_2.text = getString(R.string.activity_barcode_send_sms, barcode.secondaryPhone)
-        button_send_sms_or_mms_3.text = getString(R.string.activity_barcode_send_sms, barcode.tertiaryPhone)
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_1)?.text =
+            getString(R.string.activity_barcode_send_sms, barcode.phone)
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_2)?.text =
+            getString(R.string.activity_barcode_send_sms, barcode.secondaryPhone)
+        findViewById<IconButton>(R.id.button_send_sms_or_mms_3)?.text =
+            getString(R.string.activity_barcode_send_sms, barcode.tertiaryPhone)
 
-        button_send_email_1.text = getString(R.string.activity_barcode_send_email, barcode.email)
-        button_send_email_2.text = getString(R.string.activity_barcode_send_email, barcode.secondaryEmail)
-        button_send_email_3.text = getString(R.string.activity_barcode_send_email, barcode.tertiaryEmail)
+        findViewById<IconButton>(R.id.button_send_email_1)?.text =
+            getString(R.string.activity_barcode_send_email, barcode.email)
+        findViewById<IconButton>(R.id.button_send_email_2)?.text =
+            getString(R.string.activity_barcode_send_email, barcode.secondaryEmail)
+        findViewById<IconButton>(R.id.button_send_email_3)?.text =
+            getString(R.string.activity_barcode_send_email, barcode.tertiaryEmail)
     }
 
     private fun showConnectToWifiButtonEnabled(isEnabled: Boolean) {
-        button_connect_to_wifi.isEnabled = isEnabled
+        findViewById<IconButton>(R.id.button_connect_to_wifi)?.isEnabled = isEnabled
     }
 
     private fun showDeleteBarcodeConfirmationDialog() {
-        val dialog = DeleteConfirmationDialogFragment.newInstance(R.string.dialog_delete_barcode_message)
+        val dialog =
+            DeleteConfirmationDialogFragment.newInstance(R.string.dialog_delete_barcode_message)
         dialog.show(supportFragmentManager, "")
     }
 
@@ -730,8 +856,8 @@ class BarcodeActivity : BaseActivity(), DeleteConfirmationDialogFragment.Listene
     }
 
     private fun showLoading(isLoading: Boolean) {
-        progress_bar_loading.isVisible = isLoading
-        scroll_view.isVisible = isLoading.not()
+        findViewById<ProgressBar>(R.id.progress_bar_loading)?.isVisible = isLoading
+        findViewById<NestedScrollView>(R.id.scroll_view)?.isVisible = isLoading.not()
     }
 
 

@@ -5,10 +5,12 @@ import android.content.pm.ResolveInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.full.qr.scanner.top.secure.no.R
-import kotlinx.android.synthetic.main.item_app.view.*
+import com.full.qr.scanner.top.secure.no.feature.common.view.IconButtonWithDelimiter
 
 class AppAdapter(private val listener: Listener) : RecyclerView.Adapter<AppAdapter.ViewHolder>() {
 
@@ -50,15 +52,15 @@ class AppAdapter(private val listener: Listener) : RecyclerView.Adapter<AppAdapt
         }
 
         private fun showName(app: ResolveInfo) {
-            itemView.text_view.text = app.loadLabel(packageManager)
+            itemView.findViewById<TextView>(R.id.text_view).text = app.loadLabel(packageManager)
         }
 
         private fun showIcon(app: ResolveInfo) {
-            itemView.image_view.setImageDrawable(app.loadIcon(packageManager))
+            itemView.findViewById<ImageView>(R.id.image_view).setImageDrawable(app.loadIcon(packageManager))
         }
 
         private fun showDelimiter(isLastPosition: Boolean) {
-            itemView.delimiter.isInvisible = isLastPosition
+            itemView.findViewById<View>(R.id.delimiter).isInvisible = isLastPosition
         }
 
         private fun handleItemClicked(app: ResolveInfo) {

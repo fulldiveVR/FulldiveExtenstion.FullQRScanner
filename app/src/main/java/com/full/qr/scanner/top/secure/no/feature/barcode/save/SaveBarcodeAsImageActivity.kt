@@ -5,8 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.barcodeImageGenerator
 import com.full.qr.scanner.top.secure.no.di.barcodeImageSaver
@@ -20,7 +26,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_save_barcode_as_image.*
 
 class SaveBarcodeAsImageActivity : BaseActivity() {
 
@@ -39,7 +44,8 @@ class SaveBarcodeAsImageActivity : BaseActivity() {
     }
 
     private val barcode by unsafeLazy {
-        intent?.getSerializableExtra(BARCODE_KEY) as? Barcode ?: throw IllegalArgumentException("No barcode passed")
+        intent?.getSerializableExtra(BARCODE_KEY) as? Barcode
+            ?: throw IllegalArgumentException("No barcode passed")
     }
 
     private val disposable = CompositeDisposable()
@@ -53,7 +59,13 @@ class SaveBarcodeAsImageActivity : BaseActivity() {
         initSaveButton()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         if (permissionsHelper.areAllPermissionsGranted(grantResults)) {
             saveBarcode()
         }
@@ -65,17 +77,20 @@ class SaveBarcodeAsImageActivity : BaseActivity() {
     }
 
     private fun supportEdgeToEdge() {
-        root_view.applySystemWindowInsets(applyTop = true, applyBottom = true)
+        findViewById<CoordinatorLayout>(R.id.root_view).applySystemWindowInsets(
+            applyTop = true,
+            applyBottom = true
+        )
     }
 
     private fun initToolbar() {
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             finish()
         }
     }
 
     private fun initFormatSpinner() {
-        spinner_save_as.adapter = ArrayAdapter.createFromResource(
+        findViewById<Spinner>(R.id.spinner_save_as).adapter = ArrayAdapter.createFromResource(
             this, R.array.activity_save_barcode_as_image_formats, R.layout.item_spinner
         ).apply {
             setDropDownViewResource(R.layout.item_spinner_dropdown)
@@ -83,7 +98,7 @@ class SaveBarcodeAsImageActivity : BaseActivity() {
     }
 
     private fun initSaveButton() {
-        button_save.setOnClickListener {
+        findViewById<Button>(R.id.button_save).setOnClickListener {
             requestPermissions()
         }
     }
@@ -93,17 +108,31 @@ class SaveBarcodeAsImageActivity : BaseActivity() {
     }
 
     private fun saveBarcode() {
-        val saveFunc = when (spinner_save_as.selectedItemPosition) {
+        val saveFunc = when (findViewById<Spinner>(R.id.spinner_save_as).selectedItemPosition) {
             0 -> {
                 barcodeImageGenerator
                     .generateBitmapAsync(barcode, 640, 640, 2)
-                    .flatMapCompletable { barcodeImageSaver.savePngImageToPublicDirectory(this, it, barcode) }
+                    .flatMapCompletable {
+                        barcodeImageSaver.savePngImageToPublicDirectory(
+                            this,
+                            it,
+                            barcode
+                        )
+                    }
             }
+
             1 -> {
                 barcodeImageGenerator
                     .generateSvgAsync(barcode, 640, 640, 2)
-                    .flatMapCompletable { barcodeImageSaver.saveSvgImageToPublicDirectory(this, it, barcode) }
+                    .flatMapCompletable {
+                        barcodeImageSaver.saveSvgImageToPublicDirectory(
+                            this,
+                            it,
+                            barcode
+                        )
+                    }
             }
+
             else -> return
         }
 
@@ -123,12 +152,16 @@ class SaveBarcodeAsImageActivity : BaseActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        progress_bar_loading.isVisible = isLoading
-        scroll_view.isVisible = isLoading.not()
+        findViewById<ProgressBar>(R.id.progress_bar_loading).isVisible = isLoading
+        findViewById<NestedScrollView>(R.id.scroll_view).isVisible = isLoading.not()
     }
 
     private fun showBarcodeSaved() {
-        Toast.makeText(this, R.string.activity_save_barcode_as_image_file_name_saved, Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this,
+            R.string.activity_save_barcode_as_image_file_name_saved,
+            Toast.LENGTH_LONG
+        ).show()
         finish()
     }
 }

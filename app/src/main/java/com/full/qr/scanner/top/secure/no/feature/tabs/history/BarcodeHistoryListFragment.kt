@@ -8,19 +8,21 @@ import androidx.fragment.app.Fragment
 import androidx.paging.PagedList
 import androidx.paging.RxPagedListBuilder
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.di.barcodeDatabase
 import com.full.qr.scanner.top.secure.no.extension.orZero
 import com.full.qr.scanner.top.secure.no.extension.showError
 import com.full.qr.scanner.top.secure.no.feature.barcode.BarcodeActivity
 import com.full.qr.scanner.top.secure.no.model.Barcode
+import com.google.android.material.tabs.TabLayout
 import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.fragment_barcode_history_list.*
 
 class BarcodeHistoryListFragment : Fragment(), BarcodeHistoryAdapter.Listener {
+    private lateinit var fragmentView: View
 
     companion object {
         private const val PAGE_SIZE = 20
@@ -54,6 +56,7 @@ class BarcodeHistoryListFragment : Fragment(), BarcodeHistoryAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fragmentView = view
         initRecyclerView()
         loadHistory()
     }
@@ -68,7 +71,8 @@ class BarcodeHistoryListFragment : Fragment(), BarcodeHistoryAdapter.Listener {
     }
 
     private fun initRecyclerView() {
-        recycler_view_history.apply {
+        fragmentView.findViewById<RecyclerView>(R.id.recycler_view_history)
+        .apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = scanHistoryAdapter
         }
