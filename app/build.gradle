@@ -13,7 +13,7 @@ sentry {
 
 android {
     compileSdkVersion 33
-    buildToolsVersion "33.0.2"
+    buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.full.qr.scanner.top.secure.no"
