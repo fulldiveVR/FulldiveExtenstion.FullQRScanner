@@ -77,3 +77,17 @@
 # VCard Parser
 -dontwarn ezvcard.**
 -keep,includedescriptorclasses class ezvcard.** { *; }
+
+-dontwarn org.jetbrains.annotations.**
+
+
+-keep class io.sentry.instrumentation.file.SentryFileWriter
+-keep class java.beans.IndexedPropertyDescriptor
+-keep class java.beans.PropertyDescriptor
+-keep class java.beans.IntrospectionException
+-keep class org.jdom.ProcessingInstruction
+-keep class org.jdom.DocType
+-keep class org.jdom.Element
+-keep class javax.servlet.ServletException
+-keep class javax.servlet.jsp.JspWriter
+-keep class org.python.core.PyObject
