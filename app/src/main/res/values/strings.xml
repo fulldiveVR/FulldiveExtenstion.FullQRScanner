@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Full QR Scanner</string>
+    <string name="app_name">Wize QR Scanner</string>
 
     <!--Shortcuts-->
     <string name="shortcut_scan_from_camera">Scan</string>

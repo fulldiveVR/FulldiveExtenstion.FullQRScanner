@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.widget.ImageView
 import android.widget.Toast
-import android.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import com.full.qr.scanner.top.secure.no.R

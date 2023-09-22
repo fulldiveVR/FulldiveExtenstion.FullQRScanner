@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.CheckBox
-import android.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets

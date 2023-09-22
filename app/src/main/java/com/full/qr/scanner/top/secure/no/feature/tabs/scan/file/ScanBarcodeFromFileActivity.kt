@@ -12,7 +12,7 @@ import android.view.MotionEvent.ACTION_UP
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible

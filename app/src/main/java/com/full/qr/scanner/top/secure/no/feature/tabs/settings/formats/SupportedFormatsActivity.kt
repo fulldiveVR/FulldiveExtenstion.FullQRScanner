@@ -3,7 +3,7 @@ package com.full.qr.scanner.top.secure.no.feature.tabs.settings.formats
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.full.qr.scanner.top.secure.no.R
 import com.full.qr.scanner.top.secure.no.extension.applySystemWindowInsets
